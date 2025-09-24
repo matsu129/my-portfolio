@@ -1,0 +1,285 @@
+import { useEffect, useRef, useState } from "react";
+
+export default function HeroSectionBlockGame() {
+  const canvasRef = useRef(null);
+  const animationRef = useRef(null);
+
+  // Typewriter state
+  const [text, setText] = useState("");
+  const fullText = "Hi, I'm Rin! Welcome to my Portfolio.";
+  const typewriterIndex = useRef(0);
+
+  // Game state refs
+  const blocksRef = useRef([]);
+  const particlesRef = useRef([]);
+  const paddleRef = useRef(null);
+  const ballRef = useRef(null);
+  const gameOverRef = useRef(false);
+  const gameStartedRef = useRef(false);
+
+  // Typewriter effect (always active)
+  useEffect(() => {
+    let timeout;
+
+    function typeWriter() {
+      if (typewriterIndex.current < fullText.length) {
+        setText(fullText.slice(0, typewriterIndex.current + 1));
+        typewriterIndex.current += 1;
+        timeout = setTimeout(typeWriter, 100);
+      }
+    }
+
+    typeWriter();
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // Game initialization
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = 600;
+
+    const cols = 25;
+    const rows = 6;
+    const blockSize = canvas.width / cols;
+
+    // Initialize blocks
+    const blocks = [];
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        blocks.push({
+          x: c * blockSize,
+          y: r * blockSize,
+          size: blockSize - 2,
+          color: `rgb(${150 + r * 10}, ${200 + c * 2}, 255)`,
+          alive: true,
+        });
+      }
+    }
+    blocksRef.current = blocks;
+
+    // Particles
+    particlesRef.current = [];
+
+    // Paddle
+    paddleRef.current = {
+      width: 120,
+      height: 15,
+      x: canvas.width / 2 - 60,
+      y: canvas.height - 30,
+    };
+
+    // Ball
+    ballRef.current = {
+      x: canvas.width / 2,
+      y: canvas.height - 50,
+      radius: 8,
+      vx: 3,
+      vy: -3,
+    };
+
+    function random(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    // Draw loop
+    function draw() {
+      ctx.fillStyle = "#cce7ff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw blocks
+      blocksRef.current.forEach(b => {
+        if (b.alive) {
+          ctx.fillStyle = b.color;
+          ctx.fillRect(b.x, b.y, b.size, b.size);
+          ctx.strokeStyle = "#99ccff";
+          ctx.strokeRect(b.x, b.y, b.size, b.size);
+        }
+      });
+
+      // Draw particles
+      particlesRef.current.forEach((p, i) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= 0.03;
+        ctx.fillStyle = `rgba(${p.r}, ${p.g}, ${p.b}, ${p.alpha})`;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+        if (p.alpha <= 0) particlesRef.current.splice(i, 1);
+      });
+
+      // Draw paddle
+      const paddle = paddleRef.current;
+      ctx.fillStyle = "#004080";
+      ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+
+      // Draw ball
+      const ball = ballRef.current;
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      ctx.fillStyle = "#004080";
+      ctx.fill();
+      ctx.closePath();
+
+      if (gameStartedRef.current && !gameOverRef.current) {
+        // Ball movement
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+
+        // Wall collisions
+        if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) ball.vx *= -1;
+        if (ball.y - ball.radius < 0) ball.vy *= -1;
+
+        // Paddle collision
+        if (
+          ball.y + ball.radius > paddle.y &&
+          ball.x > paddle.x &&
+          ball.x < paddle.x + paddle.width
+        ) {
+          ball.vy *= -1;
+        }
+
+        // Block collisions
+        blocksRef.current.forEach(b => {
+          if (
+            b.alive &&
+            ball.x + ball.radius > b.x &&
+            ball.x - ball.radius < b.x + b.size &&
+            ball.y + ball.radius > b.y &&
+            ball.y - ball.radius < b.y + b.size
+          ) {
+            b.alive = false;
+            ball.vy *= -1;
+
+            for (let i = 0; i < 5; i++) {
+              particlesRef.current.push({
+                x: ball.x,
+                y: ball.y,
+                vx: random(-2, 2),
+                vy: random(-2, -0.5),
+                size: random(4, 8),
+                alpha: 1,
+                r: 150 + Math.random() * 50,
+                g: 200 + Math.random() * 55,
+                b: 255,
+              });
+            }
+          }
+        });
+
+        // Game over
+        if (ball.y - ball.radius > canvas.height) {
+          gameOverRef.current = true;
+          setText("GAME OVER");
+        }
+      }
+
+      animationRef.current = requestAnimationFrame(draw);
+    }
+
+    draw();
+
+    // Mouse paddle control
+    function handleMouseMove(e) {
+      const rect = canvas.getBoundingClientRect();
+      const paddle = paddleRef.current;
+      paddle.x = e.clientX - rect.left - paddle.width / 2;
+      if (paddle.x < 0) paddle.x = 0;
+      if (paddle.x + paddle.width > canvas.width) paddle.x = canvas.width - paddle.width;
+    }
+    canvas.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      cancelAnimationFrame(animationRef.current);
+    };
+  }, []);
+
+  function handleStart() {
+    gameStartedRef.current = true;
+    gameOverRef.current = false;
+    blocksRef.current.forEach(b => (b.alive = true));
+    const ball = ballRef.current;
+    ball.x = window.innerWidth / 2;
+    ball.y = 550;
+    ball.vx = 6;
+    ball.vy = -6;
+  }
+
+  function handleReset() {
+    handleStart();
+    setText(fullText.substring(0, typewriterIndex.current)); // Typewriter 表示はそのまま
+  }
+
+  return (
+    <section
+      className="d-flex flex-column align-items-center justify-content-center text-center"
+      style={{
+        minHeight: "600px",
+        position: "relative",
+        fontFamily: "'Press Start 2P', monospace",
+        color: "#004080",
+      }}
+    >
+      <link
+        href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+        rel="stylesheet"
+      />
+
+      <h1 style={{ fontSize: "1.5rem", marginBottom: "1rem", zIndex: 2, position: "relative" }}>
+        {text}
+      </h1>
+
+      {!gameStartedRef.current && (
+        <button
+          onClick={handleStart}
+          style={{
+            zIndex: 2,
+            position: "relative",
+            fontFamily: "'Press Start 2P', monospace",
+            padding: "10px 20px",
+            fontSize: "1rem",
+            cursor: "pointer",
+            backgroundColor: "#004080",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+          }}
+        >
+          START
+        </button>
+      )}
+
+      {gameOverRef.current && (
+        <button
+          onClick={handleReset}
+          style={{
+            zIndex: 2,
+            position: "relative",
+            fontFamily: "'Press Start 2P', monospace",
+            padding: "10px 20px",
+            fontSize: "1rem",
+            cursor: "pointer",
+            backgroundColor: "#004080",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+          }}
+        >
+          RESET
+        </button>
+      )}
+
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: 1,
+        }}
+      />
+    </section>
+  );
+}

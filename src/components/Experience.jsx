@@ -18,29 +18,18 @@ import { SiSpring, SiPostgresql, SiGulp, SiJquery, SiTailwindcss, SiDocker, SiSn
 export default function Experience() {
   const experiences = [
     {
-      title: "Driver's License Management System",
-      company: "Public Sector",
-      period: "Online / Development",
-      description:
-        "Conducted comprehensive testing from unit tests to integration tests for web applications related to driver's license management system updates.",
-      environment: ["Linux", "Oracle"],
-      technologies: ["Java (Spring)"],
-      image: "/images/drivers_license.svg",
-    },
-    {
-      title: "Automobile Insurance System Updates",
-      company: "Insurance",
-      period: "Online / Development",
-      description:
-        "Performed unit and integration tests for online applications, including data verification from  Cobol to Java applications.",
-      environment: ["Linux", "Oracle"],
-      technologies: ["Java"],
-      image: "/images/insurance.svg",
+      title: "Advertising Website Development",
+      company: "Advertising",
+      period: "2024/11 ~ Current",
+      description: "Implemented database and data warehouse design.",
+      environment: ["Linux", "PostgreSQL", "Snowflake"],
+      technologies: ["Python"],
+      image: "/images/advertising.svg",
     },
     {
       title: "RAINS System Update",
       company: "Real Estate",
-      period: "Online / Development",
+      period: "2023/05 ~ 2024/10",
       description:
         "Conducted basic design and integration tests for online applications; performed operational tests after implementation.",
       environment: ["Linux", "PostgreSQL"],
@@ -48,15 +37,27 @@ export default function Experience() {
       image: "/images/rains.svg",
     },
     {
-      title: "Advertising Website Development",
-      company: "Advertising",
-      period: "Online / Development",
-      description: "Implemented database and data warehouse design.",
-      environment: ["Linux", "PostgreSQL", "Snowflake"],
-      technologies: ["Python"],
-      image: "/images/advertising.svg",
+      title: "Automobile Insurance System Updates",
+      company: "Insurance",
+      period: "2022/10 ~ 2023/04",
+      description:
+        "Performed unit and integration tests for online applications, including data verification from Cobol to Java applications.",
+      environment: ["Linux", "Oracle"],
+      technologies: ["Java"],
+      image: "/images/insurance.svg",
+    },
+    {
+      title: "Driver's License Management System",
+      company: "Public Sector",
+      period: "2021/12 ~ 2022/08",
+      description:
+        "Conducted comprehensive testing from unit tests to integration tests for web applications related to driver's license management system updates.",
+      environment: ["Linux", "Oracle"],
+      technologies: ["Java (Spring)"],
+      image: "/images/drivers_license.svg",
     },
   ];
+
 
   const techIcons = {
     "Java": <FaJava className="me-1" />,

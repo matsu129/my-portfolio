@@ -9,18 +9,19 @@ export default function HeroSectionBlockGame() {
   const fullText = "Hi, I'm Rin! Welcome to my Portfolio.";
   const typewriterIndex = useRef(0);
 
-  // Game state refs
+  // Game state
+  const [gameStarted, setGameStarted] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+
+  // Game refs
   const blocksRef = useRef([]);
   const particlesRef = useRef([]);
   const paddleRef = useRef(null);
   const ballRef = useRef(null);
-  const gameOverRef = useRef(false);
-  const gameStartedRef = useRef(false);
 
-  // Typewriter effect (always active)
+  // Typewriter effect
   useEffect(() => {
     let timeout;
-
     function typeWriter() {
       if (typewriterIndex.current < fullText.length) {
         setText(fullText.slice(0, typewriterIndex.current + 1));
@@ -28,9 +29,7 @@ export default function HeroSectionBlockGame() {
         timeout = setTimeout(typeWriter, 100);
       }
     }
-
     typeWriter();
-
     return () => clearTimeout(timeout);
   }, []);
 
@@ -60,10 +59,7 @@ export default function HeroSectionBlockGame() {
     }
     blocksRef.current = blocks;
 
-    // Particles
-    particlesRef.current = [];
-
-    // Paddle
+    // Initialize paddle
     paddleRef.current = {
       width: 120,
       height: 15,
@@ -71,26 +67,25 @@ export default function HeroSectionBlockGame() {
       y: canvas.height - 30,
     };
 
-    // Ball
+    // Initialize ball
     ballRef.current = {
       x: canvas.width / 2,
       y: canvas.height - 50,
       radius: 8,
-      vx: 3,
-      vy: -3,
+      vx: 6,
+      vy: -6,
     };
 
     function random(min, max) {
       return Math.random() * (max - min) + min;
     }
 
-    // Draw loop
     function draw() {
       ctx.fillStyle = "#cce7ff";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Draw blocks
-      blocksRef.current.forEach(b => {
+      blocksRef.current.forEach((b) => {
         if (b.alive) {
           ctx.fillStyle = b.color;
           ctx.fillRect(b.x, b.y, b.size, b.size);
@@ -122,13 +117,13 @@ export default function HeroSectionBlockGame() {
       ctx.fill();
       ctx.closePath();
 
-      if (gameStartedRef.current && !gameOverRef.current) {
-        // Ball movement
+      if (gameStarted && !gameOver) {
         ball.x += ball.vx;
         ball.y += ball.vy;
 
         // Wall collisions
-        if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) ball.vx *= -1;
+        if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0)
+          ball.vx *= -1;
         if (ball.y - ball.radius < 0) ball.vy *= -1;
 
         // Paddle collision
@@ -141,7 +136,7 @@ export default function HeroSectionBlockGame() {
         }
 
         // Block collisions
-        blocksRef.current.forEach(b => {
+        blocksRef.current.forEach((b) => {
           if (
             b.alive &&
             ball.x + ball.radius > b.x &&
@@ -170,7 +165,7 @@ export default function HeroSectionBlockGame() {
 
         // Game over
         if (ball.y - ball.radius > canvas.height) {
-          gameOverRef.current = true;
+          setGameOver(true);
           setText("GAME OVER");
         }
       }
@@ -186,7 +181,8 @@ export default function HeroSectionBlockGame() {
       const paddle = paddleRef.current;
       paddle.x = e.clientX - rect.left - paddle.width / 2;
       if (paddle.x < 0) paddle.x = 0;
-      if (paddle.x + paddle.width > canvas.width) paddle.x = canvas.width - paddle.width;
+      if (paddle.x + paddle.width > canvas.width)
+        paddle.x = canvas.width - paddle.width;
     }
     canvas.addEventListener("mousemove", handleMouseMove);
 
@@ -194,12 +190,12 @@ export default function HeroSectionBlockGame() {
       canvas.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(animationRef.current);
     };
-  }, []);
+  }, [gameStarted, gameOver]);
 
   function handleStart() {
-    gameStartedRef.current = true;
-    gameOverRef.current = false;
-    blocksRef.current.forEach(b => (b.alive = true));
+    setGameStarted(true);
+    setGameOver(false);
+    blocksRef.current.forEach((b) => (b.alive = true));
     const ball = ballRef.current;
     ball.x = window.innerWidth / 2;
     ball.y = 550;
@@ -209,7 +205,7 @@ export default function HeroSectionBlockGame() {
 
   function handleReset() {
     handleStart();
-    setText(fullText.substring(0, typewriterIndex.current)); // Typewriter 表示はそのまま
+    setText(fullText.substring(0, typewriterIndex.current));
   }
 
   return (
@@ -227,11 +223,40 @@ export default function HeroSectionBlockGame() {
         rel="stylesheet"
       />
 
-      <h1 style={{ fontSize: "1.5rem", marginBottom: "1rem", zIndex: 2, position: "relative" }}>
+      <h1
+        style={{
+          fontSize: "1.5rem",
+          marginBottom: "1rem",
+          zIndex: 2,
+          position: "relative",
+        }}
+      >
         {text}
       </h1>
 
-      {!gameStartedRef.current && (
+      {/* 注釈 */}
+      <div
+        style={{
+          marginTop: "1rem",
+          backgroundColor: "rgba(255, 255, 255, 0.8)",
+          color: "#004080",
+          padding: "5px 10px",
+          borderRadius: "5px",
+          fontSize: "0.9rem",
+          textAlign: "center",
+          maxWidth: "90%",
+          zIndex: 2,
+          position: "relative",
+        }}
+      >
+        {!gameStarted && !gameOver && (
+          <>Use mouse to move the paddle | Break all the blocks | Don’t let the ball fall!</>
+        )}
+        {gameOver && <>Game Over! Click RESET to try again.</>}
+      </div>
+
+      {/* START ボタン */}
+      {!gameStarted && !gameOver && (
         <button
           onClick={handleStart}
           style={{
@@ -245,13 +270,15 @@ export default function HeroSectionBlockGame() {
             color: "#fff",
             border: "none",
             borderRadius: "5px",
+            marginTop: "0.5rem",
           }}
         >
           START
         </button>
       )}
 
-      {gameOverRef.current && (
+      {/* RESET ボタン */}
+      {gameOver && (
         <button
           onClick={handleReset}
           style={{
@@ -265,6 +292,7 @@ export default function HeroSectionBlockGame() {
             color: "#fff",
             border: "none",
             borderRadius: "5px",
+            marginTop: "0.5rem",
           }}
         >
           RESET

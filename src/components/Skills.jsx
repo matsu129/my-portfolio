@@ -22,14 +22,14 @@ export default function Skills() {
         <li className="list-inline-item badge bg-dark text-white m-1 fs-5">
           <FaPython className="me-1" /> Python
         </li>
-        <li className="list-inline-item badge bg-secondary text-white m-1 fs-5">
-          <FaDatabase className="me-1" /> SQL
-        </li>
         <li className="list-inline-item badge bg-success text-white m-1 fs-5">
           <FaNodeJs className="me-1" /> Node.js
         </li>
         <li className="list-inline-item badge bg-purple text-white m-1 fs-5" style={{ backgroundColor: '#777BB4' }}>
           <SiPhp className="me-1" /> PHP
+        </li>
+        <li className="list-inline-item badge bg-secondary text-white m-1 fs-5">
+          <FaDatabase className="me-1" /> SQL
         </li>
       </ul>
     </section>

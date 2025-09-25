@@ -21,10 +21,11 @@ export default function Experience() {
       title: "Advertising Website Development",
       company: "Advertising",
       period: "2024/11 ~ Current",
-      description: "Implemented database and data warehouse design.",
+      description: "Participated in a major project to revamp the company website, rebuild and optimize the database system, and deploy a comprehensive business intelligence solution integrated with a data warehouse, aiming to improve data accessibility, reporting efficiency, and overall decision-making capabilities across the organization.",
       environment: ["Linux", "PostgreSQL", "Snowflake"],
       technologies: ["Python"],
       image: "/images/advertising.svg",
+      url: "https://www.sendenkaigi.co.jp/"
     },
     {
       title: "RAINS System Update",
@@ -35,6 +36,7 @@ export default function Experience() {
       environment: ["Linux", "PostgreSQL"],
       technologies: ["Java"],
       image: "/images/rains.svg",
+      url: "http://www.reins.or.jp/about/"
     },
     {
       title: "Automobile Insurance System Updates",
@@ -101,20 +103,25 @@ export default function Experience() {
           <div className="col-12 mb-4" key={index}>
             <div className="card h-100" style={{ minHeight: "250px" }}>
               <div className="d-flex flex-column flex-md-row h-100">
-                {/* 画像部分 */}
-                {exp.image && (
-                  <img
-                    src={exp.image}
-                    alt={exp.title}
-                    className="img-fluid me-md-3 mb-3 mb-md-0"
-                    style={{
-                      width: "100%",
-                      maxWidth: "450px",
-                      objectFit: "cover",
-                      borderRadius: "0.25rem 0 0 0.25rem",
-                    }}
-                  />
-                )}
+                {/* 画像 / プレビュー部分 */}
+                <div style={{ width: "100%", maxWidth: "450px", marginBottom: "1rem", borderRadius: "0.25rem", overflow: "hidden" }}>
+                  {exp.url ? (
+                    <iframe
+                      src={exp.url}
+                      title={exp.title}
+                      style={{ width: "100%", height: "500px", border: "none" }}
+                    />
+                  ) : (
+                    exp.image && (
+                      <img
+                        src={exp.image}
+                        alt={exp.title}
+                        className="img-fluid"
+                        style={{ width: "100%", objectFit: "cover" }}
+                      />
+                    )
+                  )}
+                </div>
 
                 {/* テキスト部分 */}
                 <div className="card-body d-flex flex-column flex-grow-1">

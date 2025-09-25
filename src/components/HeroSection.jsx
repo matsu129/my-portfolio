@@ -6,7 +6,7 @@ export default function HeroSectionBlockGame() {
 
   // Typewriter state
   const [text, setText] = useState("");
-  const fullText = "Hi, I'm Rin! Welcome to my Portfolio.";
+  const fullText = "Hi, I'm Rinko! Welcome to my Portfolio.";
   const typewriterIndex = useRef(0);
 
   // Game state
@@ -72,8 +72,8 @@ export default function HeroSectionBlockGame() {
       x: canvas.width / 2,
       y: canvas.height - 50,
       radius: 8,
-      vx: 6,
-      vy: -6,
+      vx: 4,
+      vy: -4,
     };
 
     function random(min, max) {
@@ -162,6 +162,12 @@ export default function HeroSectionBlockGame() {
             }
           }
         });
+                
+        // Complete
+        if (blocksRef.current.every(b => !b.alive)) {
+          setGameOver(true);
+          setText("CONGRATULATIONS! 🎉");
+        }
 
         // Game over
         if (ball.y - ball.radius > canvas.height) {

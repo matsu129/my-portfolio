@@ -41,11 +41,26 @@ export default function Contact() {
       className="my-5 py-5 px-4 rounded shadow-sm"
       id="contact"
       style={{
-        background: "linear-gradient(to bottom, #a0d8ff, #e6f0f9)",
+        background: "linear-gradient(to bottom, #aacfeaff, #e6f0f9)",
       }}
     >
       <div className="container text-center">
-        <h2 className="mb-5">Contact me!</h2>
+        <h2
+          className="mb-5 fw-bold text-white"
+          style={{
+            textShadow: "2px 2px 8px rgba(0,0,0,0.6)"
+          }}
+        >
+          Contact me!
+        </h2>
+        <p className="mb-5 fw-bold text-white"
+          style={{
+            textShadow: "1px 1px 3px rgba(0,0,0,0.6)"
+          }}
+        >
+          Feel free to contact me by submitting the form below and I will get back to you as soon as possible.
+        </p>
+
 
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-5">
           {/* Left: Profile */}
@@ -54,14 +69,14 @@ export default function Contact() {
             flexBasis: "45%",
             maxWidth: "500px",
           }}>
-            <h3 className="mb-3">
+            <h3 className="mb-3 text-muted">
               Open to new opportunities
             </h3>
-            <h4>
+            <h4 className="mb-3 text-muted">
               — let’s work together!
             </h4>
             
-            <p className="mb-3 lh-base">
+            <p className="mb-3 lh-base text-muted">
               I’m a full-stack developer passionate about building user-friendly web applications.
               Always eager to learn new technologies and tackle challenging projects.
               Feel free to reach out if you’re looking for someone dedicated and creative!
@@ -73,7 +88,7 @@ export default function Contact() {
               width={100}
             />
             <p className="fw-bold mb-1">Rinko Matsuoka</p>
-            <p className="mb-3">
+            <p className="mb-3 text-muted">
               Email: <a href="mailto:rinko@example.com">rinko@example.com</a>
             </p>
 
@@ -99,60 +114,59 @@ export default function Contact() {
               </a>
             </div>
           </div>
-
           {/* Right: Form */}
-          <div className="flex-grow-1 d-flex justify-content-center justify-content-md-start">
-            <form
-              onSubmit={handleSubmit}
+          <div className="flex-grow-1 d-flex justify-content-start justify-content-md-start">
+            <div
+              className="card shadow-lg border-0"
               style={{
                 maxWidth: "600px",
                 width: "100%",
-                marginLeft: "0", // デフォルトは0
-                marginRight: "0",
               }}
-              className="mx-md-0 mx-auto" // モバイルでは自動マージンで中央
             >
-              <div className="mb-3">
-                <label className="form-label">Your Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="form-control"
-                  required
-                />
+              <div className="card-body">
+                <form onSubmit={handleSubmit}>
+                  <div className="mb-3">
+                    <label className="form-label fw-bold text-secondary">Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="form-control"
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-bold text-secondary">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="form-control"
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-bold text-secondary">Message</label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      className="form-control"
+                      rows="5"
+                      required
+                    />
+                  </div>
+
+                  <button type="submit" className="btn btn-primary w-100 fw-bold">
+                    Send Message
+                  </button>
+                </form>
               </div>
-
-              <div className="mb-3">
-                <label className="form-label">Your Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="form-control"
-                  required
-                />
-              </div>
-
-              <div className="mb-3">
-                <label className="form-label">Message</label>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="form-control"
-                  rows="5"
-                  required
-                />
-              </div>
-
-              <button type="submit" className="btn btn-primary w-100">
-                Send Message
-              </button>
-            </form>
-
+            </div>
             {status && (
               <p className="mt-3 text-center text-md-start w-100">{status}</p>
             )}

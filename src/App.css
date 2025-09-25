@@ -40,3 +40,7 @@
 .read-the-docs {
   color: #888;
 }
+
+section {
+  scroll-margin-top: 70px; /* ヘッダー高さ分 */
+}
